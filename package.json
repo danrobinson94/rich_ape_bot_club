@@ -1,0 +1,22 @@
+{
+  "name": "opensesame",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apify": "^2.3.0",
+    "cloudflare-scraper": "^1.0.8",
+    "delay": "^5.0.0",
+    "fs": "^0.0.1-security",
+    "puppeteer": "^13.5.2",
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-stealth": "^2.9.0",
+    "yarn": "^1.22.18"
+  }
+}
