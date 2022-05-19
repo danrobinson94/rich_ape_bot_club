@@ -51,8 +51,8 @@ module.exports = async (browser, inputs) => {
             await pageCount[y].close();
           }
         }
-        await page1.waitForTimeout(500);
-        // await listingPage(browser, linksArray[i], inputs);
+        await page1.waitForTimeout(250);
+        await listingPage(browser, linksArray[i], inputs);
         // await listingPage(
         //   browser,
         //   "https://opensea.io/assets/0x60e4d786628fea6478f785a6d7e704777c86a7c6/21568"
