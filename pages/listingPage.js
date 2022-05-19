@@ -22,15 +22,15 @@ module.exports = async (browser, link, inputs) => {
 
   const correctType = inputs[0]?.propertyType;
   const correctValue = inputs[0]?.propertyValue;
-  await page1.waitForXPath(
+  await page2.waitForXPath(
     `//div[contains(., "${correctType}") and @class="Property--type"]/../div[2]`
   );
-  const [property] = await page1.$x(
+  const [property] = await page2.$x(
     `//div[contains(., "${correctType}") and @class="Property--type"]/../div[2]`,
     { visible: true, timeout: 5000 }
   );
   let propertyValue;
-  propertyValue = await page1.evaluate(
+  propertyValue = await page2.evaluate(
     (anchor) => anchor.textContent,
     property
   );
