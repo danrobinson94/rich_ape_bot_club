@@ -2,7 +2,7 @@ const listingPage = require("./listingPage");
 const fs = require("fs");
 
 module.exports = async (browser, inputs) => {
-  const offersConfirmed = require("./offersConfirmed.json");
+  const offersConfirmed = require("../../offersConfirmed.json");
   const page1 = await browser.newPage();
   await page1.goto(inputs[0]?.collectionUrl);
   await page1.setCacheEnabled(false);
@@ -16,10 +16,9 @@ module.exports = async (browser, inputs) => {
     "//*[@id='__next']/div/div[1]/nav/ul/div[2]/div/li/a/div/img",
     { visible: true, timeout: 10000 }
   );
-
   await page1.waitForXPath(
-    `//a[contains(@href, 'assets/${inputs[0].collectionWallet}')]`,
-    { visible: true, timeout: 10000 }
+    `//a[contains(@href, 'assets/ethereum/${inputs[0].collectionWallet}')]`,
+    { visible: true, timeout: 15000 }
   );
 
   let linksArray = [];
@@ -41,35 +40,33 @@ module.exports = async (browser, inputs) => {
     }
   }
 
-  await page1.setViewport({
-    width: 1200,
-    height: 800,
-  });
   let offeredArray = offersConfirmed;
   const makeOffers = async () => {
     if (linksArray?.length > 0) {
       let pageCount = [];
       for (let i = 0; i < linksArray.length; i += 1) {
-        // await page1.waitForTimeout(4000);
         pageCount = await browser.pages();
-
         if (pageCount.length > 1) {
           for (let y = 1; y < pageCount.length; y += 1) {
             await pageCount[y].close();
           }
         }
         await page1.waitForTimeout(500);
-        await listingPage(browser, linksArray[i], inputs);
-        // await listingPage(browser, linksArray[0]);
+        // await listingPage(browser, linksArray[i], inputs);
         // await listingPage(
         //   browser,
         //   "https://opensea.io/assets/0x60e4d786628fea6478f785a6d7e704777c86a7c6/21568"
         // );
-        await offeredArray.push(linksArray[i]);
+
+        const offerObject = {
+          link: linksArray[i],
+          amount: inputs[0]?.offerAmount,
+        };
+        await offeredArray.push(offerObject);
         await page1.waitForTimeout(500);
         await fs.writeFile(
-          "pages/offersConfirmed.json",
-          JSON.stringify(offeredArray),
+          "/Users/danrobinson/Documents/Projects/Archive/offersConfirmed.json",
+          JSON.stringify(offeredArray, null, 2),
           function (err, result) {
             if (err) console.log("error", err);
           }
@@ -86,11 +83,6 @@ module.exports = async (browser, inputs) => {
     linksArray = [];
   };
 
-  await page1.waitForXPath(
-    `//a[contains(@href, 'assets/${inputs[0].collectionWallet}')]`,
-    { visible: true, timeout: 10000 }
-  );
-
   let getMoreCounter = Number(timesScrolled);
 
   const getMoreListings = async () => {
@@ -106,10 +98,12 @@ module.exports = async (browser, inputs) => {
     });
     await page1.waitForTimeout(750);
     const listingsArray = await page1.$x(
-      `//a[contains(@href, 'assets/${inputs[0].collectionWallet}')]`,
+      `//a[contains(@href, 'assets/ethereum/${inputs[0].collectionWallet}')]`,
       { visible: true, timeout: 10000 }
     );
-    const data = await fs.readFileSync("pages/offersConfirmed.json");
+    const data = await fs.readFileSync(
+      "/Users/danrobinson/Documents/Projects/Archive/offersConfirmed.json"
+    );
     const alreadyOffered = await JSON.parse(data);
     for (let i = 0; i < listingsArray.length; i += 1) {
       let link = await page1.evaluate(
