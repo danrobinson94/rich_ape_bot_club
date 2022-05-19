@@ -128,9 +128,9 @@ module.exports = async (browser, inputs) => {
     }
     return;
   };
-
-  await page1.waitForXPath("//span[text() = 'Koda: 1 - 9999']");
-  const [kodaPill] = await page1.$x("//span[text() = 'Koda: 1 - 9999']", {
+  const filterPill = inputs[0]?.filterPill;
+  await page1.waitForXPath(`//span[text() = "${filterPill}"]`);
+  const [kodaPill] = await page1.$x(`//span[text() = "${filterPill}"]`, {
     visible: true,
     timeout: 10000,
   });
