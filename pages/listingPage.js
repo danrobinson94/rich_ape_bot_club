@@ -20,7 +20,22 @@ module.exports = async (browser, link, inputs) => {
     timeout: 10000,
   });
 
-  if (bidButtons.length === 0) {
+  const correctType = inputs[0]?.propertyType;
+  const correctValue = inputs[0]?.propertyValue;
+  await page1.waitForXPath(
+    `//div[contains(., "${correctType}") and @class="Property--type"]/../div[2]`
+  );
+  const [property] = await page1.$x(
+    `//div[contains(., "${correctType}") and @class="Property--type"]/../div[2]`,
+    { visible: true, timeout: 5000 }
+  );
+  let propertyValue;
+  propertyValue = await page1.evaluate(
+    (anchor) => anchor.textContent,
+    property
+  );
+
+  if (bidButtons.length === 0 && propertyValue === correctValue) {
     let offerAmount = inputs[0]?.offerAmount;
     let timeAmount = "Custom date";
 
