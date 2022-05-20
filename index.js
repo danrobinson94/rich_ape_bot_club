@@ -5,6 +5,7 @@ const metamask = require("./pages/metamask");
 const signInPage = require("./pages/signInPage");
 const collectionPage = require("./pages/collectionPage");
 const inputs = require("./inputs.json");
+// const time = require("time");
 puppeteer.use(StealthPlugin());
 
 class BrowserHandler {

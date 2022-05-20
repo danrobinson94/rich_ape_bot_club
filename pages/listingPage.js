@@ -1,4 +1,25 @@
+const moment = require("moment-timezone");
 module.exports = async (browser, link, inputs) => {
+  // May 19, 2022 7:09 PM
+  // const local = moment()
+  //   .utc(date)
+  //   .local()
+  //   .format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (MT)");
+  // console.log(local, "- UTC now to local");
+
+  // const dateThingy = moment();
+  // dateThingy.utc();
+  // console.log(dateThingy.format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (MT)"));
+  // dateThingy.add(2, "h");
+  // console.log(
+  //   "TRY AGAIN",
+  //   dateThingy.format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (MT)")
+  // );
+  // const currentDate = new Date().toLocaleString("en-US", {
+  //   timeZone: "America/Denver",
+  // });
+
+  // console.log("NOW", currentDate);
   const page2 = await browser.newPage();
   await page2.setCacheEnabled(false);
   await page2.goto(link);
@@ -61,14 +82,14 @@ module.exports = async (browser, link, inputs) => {
       await page2.keyboard.press("Tab");
       await page2.waitForTimeout(10);
       await page2.keyboard.press("Enter");
-      await page2.waitForTimeout(50);
+      await page2.waitForTimeout(150);
       await page2.waitForXPath(`//input[@value = '${offerAmount}']`);
       await page2.waitForXPath(`//input[@value = '${timeAmount}']`);
       const [amountFound] = await page2.$x(
         `//input[@value = '${offerAmount}']`
       );
       const [timeFound] = await page2.$x(`//input[@value = '${timeAmount}']`);
-      const time = await page2.evaluate(
+      const timeSet = await page2.evaluate(
         (timeHtml) => timeHtml.getAttribute("value"),
         timeFound
       );
@@ -77,94 +98,158 @@ module.exports = async (browser, link, inputs) => {
         (amountHtml) => amountHtml.getAttribute("value"),
         amountFound
       );
-      if (time === timeAmount && amount === offerAmount) {
-        await page2.waitForXPath("//button[contains(., 'Make Offer')]", {
-          visible: true,
-          timeout: 10000,
-        });
-        const [makeOfferButt] = await page2.$x(
-          "//button[contains(., 'Make Offer')]",
-          {
+      // COMMENT OUT LINES 102 THROUGH 159 AND THE CORRESPONDING CLOSING BRACKET ON
+      // LINE 253 TO MAKE THE BOT MAKE 30 MINUTE OFFERS RATHER THAN 1.5 HOUR OFFERS
+
+      // click the calendar, then click the hour, then press "up" on keyboard
+      await page2.waitForXPath("//i[@value = 'calendar_today']", {
+        visible: true,
+        timeout: 5000,
+      });
+      const [calendarIcon] = await page2.$x("//i[@value = 'calendar_today']", {
+        visible: true,
+        timeout: 5000,
+      });
+      if (calendarIcon) {
+        await calendarIcon.click();
+      }
+      await page2.waitForXPath("//i[@value = 'access_time']", {
+        visible: true,
+        timeout: 5000,
+      });
+      const originalDate = moment().tz("America/Denver");
+      const date = originalDate.add(1, "h");
+      await date.add(30, "m");
+      const newDate = date.format("MMM DD, YYYY H:mm A");
+      const newDay = date.format("DD");
+      const [clockIcon] = await page2.$x("//i[@value = 'access_time']", {
+        visible: true,
+        timeout: 5000,
+      });
+      if (clockIcon) {
+        await clockIcon.click();
+      }
+      await page2.keyboard.press("ArrowUp");
+      await page2.waitForXPath(`//button[contains(., "${newDay}")]`, {
+        visible: true,
+        timeout: 5000,
+      });
+      const [dateToday] = await page2.$x(`//button[contains(., "${newDay}")]`, {
+        visible: true,
+        timeout: 5000,
+      });
+      if (dateToday) {
+        await dateToday.click();
+      }
+      await page2.waitForTimeout(10);
+      await page2.keyboard.press("Enter");
+      await page2.waitForXPath("//i[@value = 'calendar_today']/../../div[2]", {
+        visible: true,
+        timeout: 5000,
+      });
+      const [dateElement] = await page2.$x(
+        "//i[@value = 'calendar_today']/../../div[2]",
+        { visible: true, timeout: 5000 }
+      );
+      let dateShown;
+      if (dateElement) {
+        dateShown = await page2.evaluate(
+          (anchor) => anchor.textContent,
+          dateElement
+        );
+      }
+      if (newDate === dateShown) {
+        if (timeSet === timeAmount && amount === offerAmount) {
+          console.log("MADE IT HERE");
+          await page2.waitForTimeout(9999999);
+          await page2.waitForXPath("//button[contains(., 'Make Offer')]", {
             visible: true,
             timeout: 10000,
-          }
-        );
-        try {
-          if (makeOfferButt) {
-            await makeOfferButt.click();
-          }
-
-          let extensionPage2 = false;
+          });
+          const [makeOfferButt] = await page2.$x(
+            "//button[contains(., 'Make Offer')]",
+            {
+              visible: true,
+              timeout: 10000,
+            }
+          );
           try {
-            let foundPage2 = false;
-            for (let i = 0; i < 10; i += 1) {
-              const pagesAmount = await browser.pages();
-              if (pagesAmount.length < 3) {
-                await page2.waitForTimeout(1000);
-              } else {
-                if (
-                  pagesAmount[2]?._target?._targetInfo?.url ===
-                  "chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/notification.html"
-                ) {
-                  foundPage2 = true;
-                  extensionPage2 = pagesAmount[2];
-                }
-                break;
-              }
+            if (makeOfferButt) {
+              await makeOfferButt.click();
             }
 
-            if (foundPage2 && extensionPage2) {
-              await page2.waitForTimeout(100);
-              await extensionPage2.waitForTimeout(1000);
-              await extensionPage2.bringToFront(); //set the new working page as the popup
-              await extensionPage2.waitForXPath(
-                "//*[@id='app-content']/div/div[2]/div/div[3]/div[1]",
-                {
-                  visible: true,
-                  timeout: 20000,
-                }
-              );
-              const [scrollButton] = await extensionPage2.$x(
-                "//*[@id='app-content']/div/div[2]/div/div[3]/div[1]",
-                {
-                  visible: true,
-                  timeout: 20000,
-                }
-              );
-              if (scrollButton) {
-                await scrollButton.click();
-              }
-              await extensionPage2.waitForXPath(
-                "//*[@id='app-content']/div/div[2]/div/div[4]/button[2]",
-                { visible: true, timeout: 5000 }
-              );
-              const [signButton] = await extensionPage2.$x(
-                "//*[@id='app-content']/div/div[2]/div/div[4]/button[2]"
-              );
-              if (signButton) {
-                await signButton.click();
-                signedListings = true;
-                await page2.waitForXPath(
-                  "//div[contains(., 'Your offer was submitted successfully!')]",
-                  { visible: true, timeout: 10000 }
-                );
-                const [offerConfirmation] = await page2.$x(
-                  "//div[contains(., 'Your offer was submitted successfully!')]",
-                  { visible: true, timeout: 10000 }
-                );
-                if (offerConfirmation) {
-                  signedListing = true;
-                  await page2.close();
+            let extensionPage2 = false;
+            try {
+              let foundPage2 = false;
+              for (let i = 0; i < 10; i += 1) {
+                const pagesAmount = await browser.pages();
+                if (pagesAmount.length < 3) {
+                  await page2.waitForTimeout(1000);
+                } else {
+                  if (
+                    pagesAmount[2]?._target?._targetInfo?.url ===
+                    "chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/notification.html"
+                  ) {
+                    foundPage2 = true;
+                    extensionPage2 = pagesAmount[2];
+                  }
+                  break;
                 }
               }
-              return;
+
+              if (foundPage2 && extensionPage2) {
+                await page2.waitForTimeout(100);
+                await extensionPage2.waitForTimeout(1000);
+                await extensionPage2.bringToFront(); //set the new working page as the popup
+                await extensionPage2.waitForXPath(
+                  "//*[@id='app-content']/div/div[2]/div/div[3]/div[1]",
+                  {
+                    visible: true,
+                    timeout: 20000,
+                  }
+                );
+                const [scrollButton] = await extensionPage2.$x(
+                  "//*[@id='app-content']/div/div[2]/div/div[3]/div[1]",
+                  {
+                    visible: true,
+                    timeout: 20000,
+                  }
+                );
+                if (scrollButton) {
+                  await scrollButton.click();
+                }
+                await extensionPage2.waitForXPath(
+                  "//*[@id='app-content']/div/div[2]/div/div[4]/button[2]",
+                  { visible: true, timeout: 5000 }
+                );
+                const [signButton] = await extensionPage2.$x(
+                  "//*[@id='app-content']/div/div[2]/div/div[4]/button[2]"
+                );
+                if (signButton) {
+                  await signButton.click();
+                  signedListings = true;
+                  await page2.waitForXPath(
+                    "//div[contains(., 'Your offer was submitted successfully!')]",
+                    { visible: true, timeout: 10000 }
+                  );
+                  const [offerConfirmation] = await page2.$x(
+                    "//div[contains(., 'Your offer was submitted successfully!')]",
+                    { visible: true, timeout: 10000 }
+                  );
+                  if (offerConfirmation) {
+                    signedListing = true;
+                    await page2.close();
+                  }
+                }
+                return;
+              }
+            } catch (e) {
+              console.log("E", e);
             }
+            await page2.waitForTimeout(10000);
           } catch (e) {
             console.log("E", e);
           }
-          await page2.waitForTimeout(10000);
-        } catch (e) {
-          console.log("E", e);
         }
       }
     }

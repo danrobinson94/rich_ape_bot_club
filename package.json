@@ -10,10 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "all": "^0.0.0",
     "apify": "^2.3.0",
     "cloudflare-scraper": "^1.0.8",
     "delay": "^5.0.0",
     "fs": "^0.0.1-security",
+    "moment": "^2.29.3",
+    "moment-timezone": "^0.5.34",
     "puppeteer": "^13.5.2",
     "puppeteer-extra": "^3.2.3",
     "puppeteer-extra-plugin-stealth": "^2.9.0",
