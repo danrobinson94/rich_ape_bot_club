@@ -105,7 +105,7 @@ module.exports = async (browser, link, inputs) => {
         const originalDate = moment().tz("America/Denver");
         const date = originalDate.add(increaseExp, "h");
         await date.add(30, "m");
-        newDate = date.format("MMM DD, YYYY H:mm A");
+        newDate = date.format("MMM DD, YYYY h:mm A");
         const newDay = date.format("DD");
         const [clockIcon] = await page2.$x("//i[@value = 'access_time']", {
           visible: true,
