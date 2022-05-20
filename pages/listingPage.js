@@ -78,10 +78,7 @@ module.exports = async (browser, link, inputs) => {
         (amountHtml) => amountHtml.getAttribute("value"),
         amountFound
       );
-      // COMMENT OUT LINES 102 THROUGH 159 AND THE CORRESPONDING CLOSING BRACKET ON
-      // LINE 253 TO MAKE THE BOT MAKE 30 MINUTE OFFERS RATHER THAN 1.5 HOUR OFFERS
 
-      // click the calendar, then click the hour, then press "up" on keyboard
       const increaseExp = Number(inputs[0]?.increaseExp);
       let dateShown;
       let newDate;
