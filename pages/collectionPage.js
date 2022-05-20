@@ -104,13 +104,11 @@ module.exports = async (browser, inputs) => {
     const data = await fs.readFileSync(
       "/Users/danrobinson/Documents/Projects/Archive/offersConfirmed.json"
     );
-
     const alreadyOffered = await JSON.parse(data);
     let offeredLinks = [];
     for (let x = 0; x < alreadyOffered.length; x += 1) {
       offeredLinks.push(alreadyOffered[x].link);
     }
-    console.log("ALREAD", offeredLinks);
     for (let i = 0; i < listingsArray.length; i += 1) {
       let link = await page1.evaluate(
         (anchor) => anchor.getAttribute("href"),
