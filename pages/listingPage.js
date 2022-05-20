@@ -82,7 +82,6 @@ module.exports = async (browser, link, inputs) => {
       const increaseExp = Number(inputs[0]?.increaseExp);
       let dateShown;
       let newDate;
-      console.log("INCREASE EXP", increaseExp);
       if (increaseExp > 0) {
         await page2.waitForXPath("//i[@value = 'calendar_today']", {
           visible: true,
@@ -116,6 +115,7 @@ module.exports = async (browser, link, inputs) => {
           await clockIcon.click();
         }
         for (let x = 0; x < increaseExp; x += 1) {
+          await page2.waitForTimeout(10);
           await page2.keyboard.press("ArrowUp");
         }
         await page2.waitForXPath(`//button[contains(., "${newDay}")]`, {
@@ -157,102 +157,99 @@ module.exports = async (browser, link, inputs) => {
       if (increaseExp > 0) {
         checkDates = true;
       }
-      console.log("SHOULD WE", checkDates);
       if (
         checkDates === false ||
         (checkDates === true && newDate === dateShown)
       ) {
         if (timeSet === timeAmount && amount === offerAmount) {
-          console.log("MADE IT HERE");
-          await page2.waitForTimeout(9999999);
-          // await page2.waitForXPath("//button[contains(., 'Make Offer')]", {
-          //   visible: true,
-          //   timeout: 10000,
-          // });
-          // const [makeOfferButt] = await page2.$x(
-          //   "//button[contains(., 'Make Offer')]",
-          //   {
-          //     visible: true,
-          //     timeout: 10000,
-          //   }
-          // );
-          // try {
-          //   if (makeOfferButt) {
-          //     await makeOfferButt.click();
-          //   }
+          await page2.waitForXPath("//button[contains(., 'Make Offer')]", {
+            visible: true,
+            timeout: 10000,
+          });
+          const [makeOfferButt] = await page2.$x(
+            "//button[contains(., 'Make Offer')]",
+            {
+              visible: true,
+              timeout: 10000,
+            }
+          );
+          try {
+            if (makeOfferButt) {
+              await makeOfferButt.click();
+            }
 
-          //   let extensionPage2 = false;
-          //   try {
-          //     let foundPage2 = false;
-          //     for (let i = 0; i < 10; i += 1) {
-          //       const pagesAmount = await browser.pages();
-          //       if (pagesAmount.length < 3) {
-          //         await page2.waitForTimeout(1000);
-          //       } else {
-          //         if (
-          //           pagesAmount[2]?._target?._targetInfo?.url ===
-          //           "chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/notification.html"
-          //         ) {
-          //           foundPage2 = true;
-          //           extensionPage2 = pagesAmount[2];
-          //         }
-          //         break;
-          //       }
-          //     }
+            let extensionPage2 = false;
+            try {
+              let foundPage2 = false;
+              for (let i = 0; i < 10; i += 1) {
+                const pagesAmount = await browser.pages();
+                if (pagesAmount.length < 3) {
+                  await page2.waitForTimeout(1000);
+                } else {
+                  if (
+                    pagesAmount[2]?._target?._targetInfo?.url ===
+                    "chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/notification.html"
+                  ) {
+                    foundPage2 = true;
+                    extensionPage2 = pagesAmount[2];
+                  }
+                  break;
+                }
+              }
 
-          //     if (foundPage2 && extensionPage2) {
-          //       await page2.waitForTimeout(100);
-          //       await extensionPage2.waitForTimeout(1000);
-          //       await extensionPage2.bringToFront(); //set the new working page as the popup
-          //       await extensionPage2.waitForXPath(
-          //         "//*[@id='app-content']/div/div[2]/div/div[3]/div[1]",
-          //         {
-          //           visible: true,
-          //           timeout: 20000,
-          //         }
-          //       );
-          //       const [scrollButton] = await extensionPage2.$x(
-          //         "//*[@id='app-content']/div/div[2]/div/div[3]/div[1]",
-          //         {
-          //           visible: true,
-          //           timeout: 20000,
-          //         }
-          //       );
-          //       if (scrollButton) {
-          //         await scrollButton.click();
-          //       }
-          //       await extensionPage2.waitForXPath(
-          //         "//*[@id='app-content']/div/div[2]/div/div[4]/button[2]",
-          //         { visible: true, timeout: 5000 }
-          //       );
-          //       const [signButton] = await extensionPage2.$x(
-          //         "//*[@id='app-content']/div/div[2]/div/div[4]/button[2]"
-          //       );
-          //       if (signButton) {
-          //         await signButton.click();
-          //         signedListings = true;
-          //         await page2.waitForXPath(
-          //           "//div[contains(., 'Your offer was submitted successfully!')]",
-          //           { visible: true, timeout: 10000 }
-          //         );
-          //         const [offerConfirmation] = await page2.$x(
-          //           "//div[contains(., 'Your offer was submitted successfully!')]",
-          //           { visible: true, timeout: 10000 }
-          //         );
-          //         if (offerConfirmation) {
-          //           signedListing = true;
-          //           await page2.close();
-          //         }
-          //       }
-          //       return;
-          //     }
-          //   } catch (e) {
-          //     console.log("E", e);
-          //   }
-          //   await page2.waitForTimeout(10000);
-          // } catch (e) {
-          //   console.log("E", e);
-          // }
+              if (foundPage2 && extensionPage2) {
+                await page2.waitForTimeout(100);
+                await extensionPage2.waitForTimeout(1000);
+                await extensionPage2.bringToFront(); //set the new working page as the popup
+                await extensionPage2.waitForXPath(
+                  "//*[@id='app-content']/div/div[2]/div/div[3]/div[1]",
+                  {
+                    visible: true,
+                    timeout: 20000,
+                  }
+                );
+                const [scrollButton] = await extensionPage2.$x(
+                  "//*[@id='app-content']/div/div[2]/div/div[3]/div[1]",
+                  {
+                    visible: true,
+                    timeout: 20000,
+                  }
+                );
+                if (scrollButton) {
+                  await scrollButton.click();
+                }
+                await extensionPage2.waitForXPath(
+                  "//*[@id='app-content']/div/div[2]/div/div[4]/button[2]",
+                  { visible: true, timeout: 5000 }
+                );
+                const [signButton] = await extensionPage2.$x(
+                  "//*[@id='app-content']/div/div[2]/div/div[4]/button[2]"
+                );
+                if (signButton) {
+                  await signButton.click();
+                  signedListings = true;
+                  await page2.waitForXPath(
+                    "//div[contains(., 'Your offer was submitted successfully!')]",
+                    { visible: true, timeout: 10000 }
+                  );
+                  const [offerConfirmation] = await page2.$x(
+                    "//div[contains(., 'Your offer was submitted successfully!')]",
+                    { visible: true, timeout: 10000 }
+                  );
+                  if (offerConfirmation) {
+                    signedListing = true;
+                    await page2.close();
+                  }
+                }
+                return;
+              }
+            } catch (e) {
+              console.log("E", e);
+            }
+            await page2.waitForTimeout(10000);
+          } catch (e) {
+            console.log("E", e);
+          }
         }
       }
     }
