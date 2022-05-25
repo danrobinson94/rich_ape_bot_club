@@ -3,18 +3,17 @@ const fs = require("fs");
 
 module.exports = async (browser, inputs) => {
   const offersConfirmed = require("../../offersConfirmed.json");
-  const operatingSystem = inputs[0]?.operatingSystem;
+  const osType = inputs[0]?.osType;
   let jsonPath;
-  console.log('OPERATING', operatingSystem, inputs[0]?.windowsPath)
-  if (operatingSystem === 'windows'){
+  if (osType === 'windows'){
     jsonPath = inputs[0]?.windowsPath
   }
-  if (operatingSystem === 'mac') {
+  if (osType === 'mac') {
     jsonPath = inputs[0]?.macPath
   }
   console.log('JSON PATH', jsonPath)
   const page1 = await browser.newPage();
-  if (operatingSystem === 'windows') {
+  if (osType === 'windows') {
   await page1.setViewport({
     width: 1280,
     height: 960,
