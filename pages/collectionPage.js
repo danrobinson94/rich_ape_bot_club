@@ -4,20 +4,16 @@ const fs = require("fs");
 module.exports = async (browser, inputs) => {
   const offersConfirmed = require("../../offersConfirmed.json");
   const osType = inputs[0]?.osType;
-  let jsonPath;
-  if (osType === 'windows'){
-    jsonPath = inputs[0]?.windowsPath
+  let jsonPath = inputs[0]?.windowsPath;
+  if (osType === "mac") {
+    jsonPath = inputs[0]?.macPath;
   }
-  if (osType === 'mac') {
-    jsonPath = inputs[0]?.macPath
-  }
-  console.log('JSON PATH', jsonPath)
   const page1 = await browser.newPage();
-  if (osType === 'windows') {
-  await page1.setViewport({
-    width: 1280,
-    height: 960,
-    deviceScaleFactor: 1,
+  if (osType === "windows") {
+    await page1.setViewport({
+      width: 1280,
+      height: 960,
+      deviceScaleFactor: 1,
     });
   }
   await page1.goto(inputs[0]?.collectionUrl);
@@ -116,9 +112,7 @@ module.exports = async (browser, inputs) => {
       `//a[contains(@href, 'assets/ethereum/${inputs[0].collectionWallet}')]`,
       { visible: true, timeout: 10000 }
     );
-    const data = await fs.readFileSync(
-      `${jsonPath}`
-    );
+    const data = await fs.readFileSync(`${jsonPath}`);
     const alreadyOffered = await JSON.parse(data);
     let offeredLinks = [];
     for (let x = 0; x < alreadyOffered.length; x += 1) {

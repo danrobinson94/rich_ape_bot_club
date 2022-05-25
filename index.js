@@ -34,6 +34,7 @@ class BrowserHandler {
     (async () => {
       await launch_browser()
         .then(async () => {
+          console.log("LAUNCHING RICH APE BOT CLUB");
           await metamask(this.browser, inputs);
           await signInPage(this.browser);
           await collectionPage(this.browser, inputs);
