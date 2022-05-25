@@ -4,7 +4,7 @@ module.exports = async (browser, link, inputs) => {
   await page2.setCacheEnabled(false);
   await page2.goto(link);
   await page2.bringToFront();
-  await page2.waitForTimeout(1000);
+  await page2.waitForTimeout(1200);
 
   await page2.waitForXPath("//i[text() = 'local_offer']", {
     visible: true,
@@ -48,7 +48,7 @@ module.exports = async (browser, link, inputs) => {
         timeout: 12500,
       });
       await page2.type("input.Input--input", offerAmount, { delay: 25 });
-      await page2.waitForTimeout(50);
+      await page2.waitForTimeout(30);
       await page2.keyboard.press("Tab");
       await page2.waitForTimeout(10);
       await page2.keyboard.press("Tab");
@@ -62,7 +62,7 @@ module.exports = async (browser, link, inputs) => {
       await page2.keyboard.press("Tab");
       await page2.waitForTimeout(10);
       await page2.keyboard.press("Enter");
-      await page2.waitForTimeout(150);
+      await page2.waitForTimeout(100);
       await page2.waitForXPath(`//input[@value = '${offerAmount}']`);
       await page2.waitForXPath(`//input[@value = '${timeAmount}']`);
       const [amountFound] = await page2.$x(
@@ -99,7 +99,7 @@ module.exports = async (browser, link, inputs) => {
         }
         await page2.waitForXPath("//i[@value = 'access_time']", {
           visible: true,
-          timeout: 5000,
+          timeout: 10000,
         });
 
         const originalDate = moment().tz("America/Denver");
@@ -109,7 +109,7 @@ module.exports = async (browser, link, inputs) => {
         const newDay = date.format("DD");
         const [clockIcon] = await page2.$x("//i[@value = 'access_time']", {
           visible: true,
-          timeout: 5000,
+          timeout: 10000,
         });
         if (clockIcon) {
           await clockIcon.click();
@@ -184,7 +184,7 @@ module.exports = async (browser, link, inputs) => {
               for (let i = 0; i < 10; i += 1) {
                 const pagesAmount = await browser.pages();
                 if (pagesAmount.length < 3) {
-                  await page2.waitForTimeout(1000);
+                  await page2.waitForTimeout(750);
                 } else {
                   if (
                     pagesAmount[2]?._target?._targetInfo?.url ===
@@ -237,7 +237,8 @@ module.exports = async (browser, link, inputs) => {
                     { visible: true, timeout: 10000 }
                   );
                   if (offerConfirmation) {
-                    signedListing = true;
+                    signedListing = true; 
+                    await page2.waitForTimeout(100);
                     await page2.close();
                   }
                 }

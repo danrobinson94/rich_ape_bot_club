@@ -3,7 +3,24 @@ const fs = require("fs");
 
 module.exports = async (browser, inputs) => {
   const offersConfirmed = require("../../offersConfirmed.json");
+  const operatingSystem = inputs[0]?.operatingSystem;
+  let jsonPath;
+  console.log('OPERATING', operatingSystem, inputs[0]?.windowsPath)
+  if (operatingSystem === 'windows'){
+    jsonPath = inputs[0]?.windowsPath
+  }
+  if (operatingSystem === 'mac') {
+    jsonPath = inputs[0]?.macPath
+  }
+  console.log('JSON PATH', jsonPath)
   const page1 = await browser.newPage();
+  if (operatingSystem === 'windows') {
+  await page1.setViewport({
+    width: 1280,
+    height: 960,
+    deviceScaleFactor: 1,
+    });
+  }
   await page1.goto(inputs[0]?.collectionUrl);
   await page1.setCacheEnabled(false);
   await page1.bringToFront();
@@ -51,13 +68,12 @@ module.exports = async (browser, inputs) => {
             await pageCount[y].close();
           }
         }
-        await page1.waitForTimeout(250);
+        await page1.waitForTimeout(500);
         await listingPage(browser, linksArray[i], inputs);
         // await listingPage(
         //   browser,
         //   "https://opensea.io/assets/0x60e4d786628fea6478f785a6d7e704777c86a7c6/21568"
         // );
-
         const offerObject = {
           link: linksArray[i],
           amount: inputs[0]?.offerAmount,
@@ -65,7 +81,7 @@ module.exports = async (browser, inputs) => {
         await offeredArray.push(offerObject);
         await page1.waitForTimeout(500);
         await fs.writeFile(
-          "/Users/danrobinson/Documents/Projects/Archive/offersConfirmed.json",
+          `${jsonPath}`,
           JSON.stringify(offeredArray, null, 2),
           function (err, result) {
             if (err) console.log("error", err);
@@ -102,7 +118,7 @@ module.exports = async (browser, inputs) => {
       { visible: true, timeout: 10000 }
     );
     const data = await fs.readFileSync(
-      "/Users/danrobinson/Documents/Projects/Archive/offersConfirmed.json"
+      `${jsonPath}`
     );
     const alreadyOffered = await JSON.parse(data);
     let offeredLinks = [];

@@ -23,7 +23,7 @@ class BrowserHandler {
           "--disable-gpu",
           "--unlimited-storage",
           "--full-memory-crash-report",
-          "--start-maximized",
+          // "--start-maximized",
         ],
       });
       this.browser.on("disconnected", async () => {
