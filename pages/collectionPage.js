@@ -142,8 +142,8 @@ module.exports = async (browser, inputs) => {
     return;
   };
   const filterPill = inputs[0]?.filterPill;
-  await page1.waitForXPath(`//span[text() = "${filterPill}"]`);
-  const [kodaPill] = await page1.$x(`//span[text() = "${filterPill}"]`, {
+  await page1.waitForXPath(`//div[text() = "${filterPill}"]`);
+  const [kodaPill] = await page1.$x(`//div[text() = "${filterPill}"]`, {
     visible: true,
     timeout: 10000,
   });
