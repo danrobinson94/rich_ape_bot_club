@@ -118,7 +118,7 @@ module.exports = async (browser, link, inputs) => {
           await page2.waitForTimeout(10);
           await page2.keyboard.press("ArrowUp");
         }
-        console.log("NEW DAY", newDay);
+
         await page2.waitForXPath(`//button[contains(., "${newDay}")]`, {
           visible: true,
           timeout: 5000,
