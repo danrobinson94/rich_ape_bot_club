@@ -106,7 +106,7 @@ module.exports = async (browser, link, inputs) => {
         const date = originalDate.add(increaseExp, "h");
         await date.add(30, "m");
         newDate = date.format("MMM DD, YYYY h:mm A");
-        const newDay = date.format("DD");
+        const newDay = date.format("D");
         const [clockIcon] = await page2.$x("//i[@value = 'access_time']", {
           visible: true,
           timeout: 10000,
@@ -118,6 +118,7 @@ module.exports = async (browser, link, inputs) => {
           await page2.waitForTimeout(10);
           await page2.keyboard.press("ArrowUp");
         }
+        console.log("NEW DAY", newDay);
         await page2.waitForXPath(`//button[contains(., "${newDay}")]`, {
           visible: true,
           timeout: 5000,
@@ -237,7 +238,7 @@ module.exports = async (browser, link, inputs) => {
                     { visible: true, timeout: 10000 }
                   );
                   if (offerConfirmation) {
-                    signedListing = true; 
+                    signedListing = true;
                     await page2.waitForTimeout(100);
                     await page2.close();
                   }
